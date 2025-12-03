@@ -4,6 +4,8 @@ from typing import Callable
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
 from sdk.manipulators.medu import MEdu
 
+from test import empty_test
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password)
+    run_test(args.host, args.client_id, args.login, args.password, empty_test)
 
 
 if __name__ == "__main__":
