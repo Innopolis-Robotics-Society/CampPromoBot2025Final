@@ -3,11 +3,15 @@ import json
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
 from sdk.manipulators.medu import MEdu
 
+from test import empty_test
+
 
 logger = logging.getLogger(__name__)
 
 
-def run_test(host: str, client_id: str, login: str, password: str):
+def run_test(
+    host: str, client_id: str, login: str, password: str, test: Callable[[MEdu], None]
+):
     """
     Run the test trajectory with background speed limiting
 
@@ -28,6 +32,8 @@ def run_test(host: str, client_id: str, login: str, password: str):
         manipulator.get_control()
 
         logger.info("Connected successfully!")
+
+        test(manipulator)
 
         logger.info("TEST COMPLETED SUCCESSFULLY")
 
@@ -89,7 +95,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password)
+    run_test(args.host, args.client_id, args.login, args.password, empty_test)
 
 
 if __name__ == "__main__":
