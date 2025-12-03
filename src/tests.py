@@ -1,18 +1,11 @@
 import json
 import logging
-import sys
 from time import sleep
 
 from sdk.manipulators.medu import MEdu
 
 from utils.innomedu import InnoMEdu
 
-
-logging.basicConfig(
-    level=logging.INFO,
-    stream=sys.stdout,
-    format="====[%(asctime)s %(levelname)s] %(name)s: %(message)s",
-)
 
 logger = logging.getLogger(__name__)
 

@@ -1,9 +1,20 @@
 import logging
+import os
+import sys
 from typing import Callable
-from sdk.manipulators.medu import MEdu
 
-from test import color_test, conveyor_test, empty_test
+import tests
 from utils.innomedu import InnoMEdu
+
+
+_stdout = sys.stdout
+# comment the line below to see all the output
+sys.stdout = os.devnull
+logging.basicConfig(
+    level=logging.INFO,
+    stream=_stdout,
+    format="====[%(asctime)s %(levelname)s] %(name)s: %(message)s",
+)
 
 
 logger = logging.getLogger(__name__)
@@ -87,7 +98,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password, color_test)
+    run_test(args.host, args.client_id, args.login, args.password, tests.color_test)
 
 
 if __name__ == "__main__":

@@ -1,17 +1,22 @@
+import logging
 import math
 from time import sleep
 from typing import Callable
+import os
+import paramiko
 
 from sdk.commands.move_coordinates_command import (
     MoveCoordinatesParamsOrientation,
     MoveCoordinatesParamsPosition,
 )
 from sdk.manipulators.medu import MEdu
+from sdk.utils.enums import ServoControlType
 
 from utils.conveyor import InnoConveyor
 
 
 class InnoMEdu:
+    logger = logging.getLogger("InnoMEdu")
     coordinate_tool: str = "tool0"
 
     pose: tuple[float, float, float] = (0.0, 0.0, 0.0)
@@ -20,8 +25,12 @@ class InnoMEdu:
 
     _USELESS_ROTATE = MoveCoordinatesParamsOrientation(0.0, 0.0, 0.0, 1.0)
     _EPS = 0.005
+    _AUDIO_REMOTE_PATH = "/home/promobot"
 
     def __init__(self, host: str, client_id: str, login: str, password: str):
+        self.host = host
+        self.login = login
+        self.password = password
         self.medu = MEdu(host, client_id, login, password)
         self.conveyor = InnoConveyor(self.medu.mgbot_conveyer)
         self.medu.set_coordinates_handler(self._position_cb)
@@ -66,10 +75,12 @@ class InnoMEdu:
             velocity_scaling_factor=velocity,
             acceleration_scaling_factor=acceleration,
         )
+        self.logger.info(f"Moved to {self.position}; pose: {self.pose}")
 
     def to_coordinates_task(
         self, x: float, y: float, z: float, task: Callable[[], None]
     ):
+        self.medu.set_servo_control_type(ServoControlType.POSE)
         while (
             abs(self.position[0] - x) > self._EPS
             or abs(self.position[1] - y) > self._EPS
@@ -80,6 +91,7 @@ class InnoMEdu:
             )
             task()
             sleep(0.025)
+        self.logger.info(f"Moved to {self.position}; pose: {self.pose}")
 
     def to_coordinates_gripper(
         self, x: float, y: float, z: float, gripper_angle: int, freq: int = 1
@@ -104,3 +116,31 @@ class InnoMEdu:
                 self.medu.manage_gripper(rotation=deg)
 
         self.to_coordinates_task(x, y, z, task)
+
+    def play_audio(self, audio: str):
+        try:
+            self.medu.play_audio(audio)
+        except Exception as e:
+            self.logger.error(f"Playing audio failed with {type(e).__name__}: {e}")
+
+    def load_audio(self, source: str):
+        if not os.path.isfile(source):
+            self.logger.error(f"File {source} does not exist")
+            return
+        try:
+            ssh_client = paramiko.SSHClient()
+            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh_client.connect(
+                hostname=self.host, username=self.login, password=self.password
+            )
+            with ssh_client.open_sftp() as sftp_client:
+                sftp_client.put(
+                    source,
+                    os.path.join(self._AUDIO_REMOTE_PATH, os.path.basename(source)),
+                )
+                self.logger.info(f"Successfully loaded {source}")
+        except Exception as e:
+            self.logger.exception(f"{type(e).__name__}: {e}")
+        finally:
+            if "ssh_client" in locals() and ssh_client:
+                ssh_client.close()
