@@ -1,5 +1,5 @@
 import logging
-
+import json
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
 from sdk.manipulators.medu import MEdu
 
@@ -30,6 +30,18 @@ def run_test(host: str, client_id: str, login: str, password: str):
         logger.info("Connected successfully!")
 
         logger.info("TEST COMPLETED SUCCESSFULLY")
+
+        manipulator.mgbot_conveyer.set_speed_motors(10)
+        manipulator.mgbot_conveyer.set_led_color(255, 0, 0)
+        dist = float("inf")
+        sensor_data = json.loads(manipulator.mgbot_conveyer.get_sensors_data(True))
+        while dist > 150:
+            sensor_data = json.loads(manipulator.mgbot_conveyer.get_sensors_data(True))
+            dist = sensor_data["DistanceSensor"]
+            logger.info(f"Distance: {dist}")
+        manipulator.mgbot_conveyer.set_speed_motors(0)
+        manipulator.mgbot_conveyer.set_led_color(0, 255, 0)
+
     except Exception as e:
         logger.exception(f"Error during test: {e}", exc_info=True)
     finally:
@@ -53,7 +65,7 @@ def main():
     parser.add_argument(
         "--host",
         type=str,
-        default="10.5.0.2",
+        default="//",
         help="IP address of the manipulator",
     )
     parser.add_argument(
