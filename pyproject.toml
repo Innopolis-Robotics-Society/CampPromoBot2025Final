@@ -5,5 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "argparse>=1.4.0",
+    "paho-mqtt>=2.1.0",
     "pm-python-sdk>=0.6.8",
+    "pydantic>=2.12.5",
 ]
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple"
+explicit = true
+
+[tool.uv.sources]
+pm-python-sdk = { index = "testpypi" }
