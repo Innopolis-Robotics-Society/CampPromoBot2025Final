@@ -2,14 +2,19 @@ import logging
 from typing import Callable
 from sdk.manipulators.medu import MEdu
 
-from test import conveyor_test, empty_test
+from test import color_test, conveyor_test, empty_test
+from utils.innomedu import InnoMEdu
 
 
 logger = logging.getLogger(__name__)
 
 
 def run_test(
-    host: str, client_id: str, login: str, password: str, test: Callable[[MEdu], None]
+    host: str,
+    client_id: str,
+    login: str,
+    password: str,
+    test: Callable[[InnoMEdu], None],
 ):
     """
     Run the test trajectory with background speed limiting
@@ -22,9 +27,8 @@ def run_test(
     """
 
     # Connect to manipulator
-    logger.info("Task 1 Test: Running test trajectory with speed limiting")
     logger.info(f"Connecting to {host} as {login}...")
-    manipulator = MEdu(host, client_id, login, password)
+    manipulator = InnoMEdu(host, client_id, login, password)
 
     try:
         manipulator.connect()
@@ -83,7 +87,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password, conveyor_test)
+    run_test(args.host, args.client_id, args.login, args.password, color_test)
 
 
 if __name__ == "__main__":
