@@ -1,0 +1,34 @@
+# Byte-code files
+*.pyc
+__pycache__/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.bak
+*.swo
+
+# Test/coverage files
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Distribution/packaging files
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

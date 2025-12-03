@@ -1,0 +1,23 @@
+version = 1
+revision = 2
+requires-python = ">=3.12"
+
+[[package]]
+name = "camppromobot2025final"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "pm-python-sdk" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pm-python-sdk", specifier = ">=0.6.8" }]
+
+[[package]]
+name = "pm-python-sdk"
+version = "0.6.8"
+source = { registry = "https://test.pypi.org/simple" }
+sdist = { url = "https://test-files.pythonhosted.org/packages/4e/2a/4ff9b1c570a54b8ce4efe61d9dead77f540b186b8ac263d64963c7fe0e96/pm_python_sdk-0.6.8.tar.gz", hash = "sha256:b01d52ef1095b50ba9de321b84de41edcc7a9bbadb128f247a186740245af618", size = 46036, upload-time = "2025-12-03T05:13:46.581Z" }
+wheels = [
+    { url = "https://test-files.pythonhosted.org/packages/4e/b4/f31a505d5269bee1561b60f2ffc9a683695699cfdff8c3b6abf2736d96a7/pm_python_sdk-0.6.8-py3-none-any.whl", hash = "sha256:cadeb5957fdc688363df6d476b1ce1aaa81ddd72a48612a3ef5360014d1fff2a", size = 64866, upload-time = "2025-12-03T05:13:44.404Z" },
+]

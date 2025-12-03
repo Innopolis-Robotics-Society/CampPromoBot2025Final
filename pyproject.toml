@@ -1,0 +1,9 @@
+[project]
+name = "camppromobot2025final"
+version = "0.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pm-python-sdk>=0.6.8",
+]
