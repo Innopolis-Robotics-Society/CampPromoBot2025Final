@@ -1,6 +1,11 @@
 import math
+from time import sleep
 from typing import Callable
 
+from sdk.commands.move_coordinates_command import (
+    MoveCoordinatesParamsOrientation,
+    MoveCoordinatesParamsPosition,
+)
 from sdk.manipulators.medu import MEdu
 
 from utils.conveyor import InnoConveyor
@@ -12,6 +17,9 @@ class InnoMEdu:
     pose: tuple[float, float, float] = (0.0, 0.0, 0.0)
     position: tuple[float, float, float] = (0.0, 0.0, 0.0)
     gpio_states: dict[str, float] = {}
+
+    _USELESS_ROTATE = MoveCoordinatesParamsOrientation(0.0, 0.0, 0.0, 1.0)
+    _EPS = 0.005
 
     def __init__(self, host: str, client_id: str, login: str, password: str):
         self.medu = MEdu(host, client_id, login, password)
@@ -41,3 +49,58 @@ class InnoMEdu:
         """The handler to parse current GPIO states and update them."""
         for i in range(len(gpio["interface_names"])):
             self.gpio_states[gpio["interface_names"][i]] = gpio["values"][i]
+
+    def to_coordinates(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        velocity: float = 1.0,
+        acceleration: float = 1.0,
+    ):
+        """More convenient method to move to coordinates."""
+        target = MoveCoordinatesParamsPosition(x, y, z)
+        self.medu.move_to_coordinates(
+            target,
+            self._USELESS_ROTATE,
+            velocity_scaling_factor=velocity,
+            acceleration_scaling_factor=acceleration,
+        )
+
+    def to_coordinates_task(
+        self, x: float, y: float, z: float, task: Callable[[], None]
+    ):
+        while (
+            abs(self.position[0] - x) > self._EPS
+            or abs(self.position[1] - y) > self._EPS
+            or abs(self.position[2] - z) > self._EPS
+        ):
+            self.medu.stream_coordinates(
+                MoveCoordinatesParamsPosition(x, y, z), self._USELESS_ROTATE
+            )
+            task()
+            sleep(0.025)
+
+    def to_coordinates_gripper(
+        self, x: float, y: float, z: float, gripper_angle: int, freq: int = 1
+    ):
+        grip_i = 0
+
+        def task():
+            nonlocal grip_i
+            grip_i = (grip_i + 1) % freq
+            if grip_i == 0:
+                deg = int(
+                    min(
+                        90.0,
+                        max(
+                            -45.0,
+                            gripper_angle
+                            # + math.atan2(self.position[1], self.position[0]) / math.pi * 180,
+                            + self.pose[0],
+                        ),
+                    )
+                )
+                self.medu.manage_gripper(rotation=deg)
+
+        self.to_coordinates_task(x, y, z, task)
