@@ -1,4 +1,5 @@
 import logging
+from typing import Callable
 
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
 from sdk.manipulators.medu import MEdu
@@ -7,7 +8,9 @@ from sdk.manipulators.medu import MEdu
 logger = logging.getLogger(__name__)
 
 
-def run_test(host: str, client_id: str, login: str, password: str):
+def run_test(
+    host: str, client_id: str, login: str, password: str, test: Callable[[MEdu], None]
+):
     """
     Run the test trajectory with background speed limiting
 
@@ -28,6 +31,8 @@ def run_test(host: str, client_id: str, login: str, password: str):
         manipulator.get_control()
 
         logger.info("Connected successfully!")
+
+        test(manipulator)
 
         logger.info("TEST COMPLETED SUCCESSFULLY")
     except Exception as e:
