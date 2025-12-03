@@ -31,8 +31,8 @@ def run_test(
     manipulator = InnoMEdu(host, client_id, login, password)
 
     try:
-        manipulator.connect()
-        manipulator.get_control()
+        manipulator.medu.connect()
+        manipulator.medu.get_control()
 
         logger.info("Connected successfully!")
 
@@ -45,8 +45,8 @@ def run_test(
     finally:
         # Cleanup
         try:
-            manipulator.stop_movement()
-            manipulator.disconnect()
+            manipulator.medu.stop_movement()
+            manipulator.medu.disconnect()
             logger.info("Disconnected successfully")
         except Exception as e:
             logger.error(f"Error disconnecting manipulator: {e}")

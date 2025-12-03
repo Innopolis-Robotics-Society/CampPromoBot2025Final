@@ -1,11 +1,12 @@
 import math
+from typing import Callable
 
 from sdk.manipulators.medu import MEdu
 
 from utils.conveyor import InnoConveyor
 
 
-class InnoMEdu(MEdu):
+class InnoMEdu:
     coordinate_tool: str = "tool0"
 
     pose: tuple[float, float, float] = (0.0, 0.0, 0.0)
@@ -13,11 +14,11 @@ class InnoMEdu(MEdu):
     gpio_states: dict[str, float] = {}
 
     def __init__(self, host: str, client_id: str, login: str, password: str):
-        super().__init__(host, client_id, login, password)
-        self.conveyer = InnoConveyor(self.mgbot_conveyer)
-        self.set_coordinates_handler(self._position_cb)
-        self.set_joint_states_handler(self._pose_cb)
-        self.set_gpio_states_handler(self._gpio_cb)
+        self.medu = MEdu(host, client_id, login, password)
+        self.conveyor = InnoConveyor(self.medu.mgbot_conveyer)
+        self.medu.set_coordinates_handler(self._position_cb)
+        self.medu.set_joint_states_handler(self._pose_cb)
+        self.medu.set_gpio_states_handler(self._gpio_cb)
 
     def choose_tool(self, tool: str):
         """
