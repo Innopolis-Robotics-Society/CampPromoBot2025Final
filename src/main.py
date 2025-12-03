@@ -1,9 +1,8 @@
 import logging
-import json
-from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
+from typing import Callable
 from sdk.manipulators.medu import MEdu
 
-from test import empty_test
+from test import conveyor_test, empty_test
 
 
 logger = logging.getLogger(__name__)
@@ -36,17 +35,6 @@ def run_test(
         test(manipulator)
 
         logger.info("TEST COMPLETED SUCCESSFULLY")
-
-        manipulator.mgbot_conveyer.set_speed_motors(10)
-        manipulator.mgbot_conveyer.set_led_color(255, 0, 0)
-        dist = float("inf")
-        sensor_data = json.loads(manipulator.mgbot_conveyer.get_sensors_data(True))
-        while dist > 150:
-            sensor_data = json.loads(manipulator.mgbot_conveyer.get_sensors_data(True))
-            dist = sensor_data["DistanceSensor"]
-            logger.info(f"Distance: {dist}")
-        manipulator.mgbot_conveyer.set_speed_motors(0)
-        manipulator.mgbot_conveyer.set_led_color(0, 255, 0)
 
     except Exception as e:
         logger.exception(f"Error during test: {e}", exc_info=True)
@@ -95,7 +83,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password, empty_test)
+    run_test(args.host, args.client_id, args.login, args.password, conveyor_test)
 
 
 if __name__ == "__main__":
