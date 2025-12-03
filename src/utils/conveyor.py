@@ -10,3 +10,7 @@ class InnoConveyor:
         """Dictionary keys: R, G, B, Prox"""
         data = json.loads(self.conveyor.get_sensors_data())
         return data["ColorSensor"]
+
+    def get_distance(self) -> int:
+        data = json.loads(self.conveyor.get_sensors_data())
+        return data["DistanceSensor"]
