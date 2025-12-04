@@ -45,7 +45,7 @@ class InnoMEdu:
     # useless but required
     _USELESS_ROTATE = MoveCoordinatesParamsOrientation(0.0, 0.0, 0.0, 1.0)
     # accuracy of positioning
-    _EPS = 0.005
+    _EPS = 0.01
     # path where audio files stored on manipulator
     _AUDIO_REMOTE_PATH = "/home/promobot"
 
