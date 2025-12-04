@@ -63,7 +63,7 @@ class InnoMEdu:
     _USELESS_ROTATE = MoveCoordinatesParamsOrientation(0.0, 0.0, 0.0, 1.0)
     """Quaternion orientation (required by API but not used in our simplified interface)"""
 
-    _POSITIONING_EPSILON = 0.01
+    _EPS = 0.01
     """Accuracy threshold for position matching in meters"""
 
     _AUDIO_REMOTE_PATH = "/opt/promobot/share/pm_behavior_tree/resources/audio"
@@ -130,10 +130,10 @@ class InnoMEdu:
         # Extract first three joint positions (base, shoulder, elbow)
         self.pose = tuple([joint_positions[i] for i in range(3)])
 
+    def _gpio_cb(self, gpio):
         """
         Internal callback to update GPIO states.
 
-    def _gpio_cb(self, gpio):
         Args:
             gpio: GPIO state data from the manipulator
         """
@@ -221,9 +221,9 @@ class InnoMEdu:
 
         # Continue until position is reached within epsilon tolerance
         while (
-            abs(self.position[0] - x) > self._POSITIONING_EPSILON
-            or abs(self.position[1] - y) > self._POSITIONING_EPSILON
-            or abs(self.position[2] - z) > self._POSITIONING_EPSILON
+            abs(self.position[0] - x) > self._EPS
+            or abs(self.position[1] - y) > self._EPS
+            or abs(self.position[2] - z) > self._EPS
         ):
             self.medu.stream_coordinates(
                 MoveCoordinatesParamsPosition(x, y, z), self._USELESS_ROTATE
