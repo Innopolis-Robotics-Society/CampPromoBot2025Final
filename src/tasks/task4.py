@@ -27,6 +27,10 @@ def task4(manip: InnoMEdu):
                 led_s = 1 - led_s
                 manip.medu.write_gpio(led_pin, led_s)
                 led_t = time()
+                if led_s == 0:
+                    manip.set_gripper(gripper=-90)
+                else:
+                    manip.set_gripper(gripper=90)
             if flfl:
                 new_angle = (
                     math.atan2(manip.position[1], manip.position[0]) - math.pi / 6
