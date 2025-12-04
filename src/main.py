@@ -9,7 +9,7 @@ import tests
 from utils.innomedu import InnoMEdu
 
 
-TEST = task4
+TEST = tests.color_test
 
 _stdout = sys.stdout
 # comment the line below to see all the output
