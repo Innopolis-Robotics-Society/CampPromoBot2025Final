@@ -2,61 +2,75 @@ import json
 import logging
 import math
 from time import sleep, time
+
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition
 from sdk.utils.enums import ServoControlType
 from utils.innomedu import InnoMEdu
-
 
 logger = logging.getLogger(__name__)
 
 
 def task4(manip: InnoMEdu):
-    led_t = time()
-    led_s = 0
+    """
+    Task 4:
+    - Toggle LED every second while the button is held.
+    - Move the toolhead in a circular oscillation around the vertical axis.
+    - Motion direction flips when the x-coordinate passes thresholds.
+    """
+
+    # GPIO configuration
+    led_last_toggle = time()
+    led_value = 0
     led_pin = "/dev/gpiochip4/e1_pin"
     button_pin = "/dev/gpiochip4/e2_pin"
-    flfl = True
-    length = 0.3
-    height = 0.3
+
+    # Motion parameters
+    oscillation_direction_forward = True
+    radius_xy = 0.3
+    z_height = 0.3
+
     manip.medu.set_servo_control_type(ServoControlType.POSE)
+
     while True:
-        button_state = manip.get_gpio(button_pin)
-        is_button = (button_state if button_state is not None else 1.0) == 0.0
-        if is_button:
-            if time() - led_t > 1.0 - manip._EPS:
-                led_s = 1 - led_s
-                manip.medu.write_gpio(led_pin, led_s)
-                led_t = time()
-            if flfl:
-                new_angle = (
-                    math.atan2(manip.position[1], manip.position[0]) - math.pi / 6
-                )
-                manip.medu.stream_coordinates(
-                    position=MoveCoordinatesParamsPosition(
-                        x=length * math.cos(new_angle),
-                        y=length * math.sin(new_angle),
-                        z=height,
-                    ),
-                    orientation=manip._USELESS_ROTATE,
-                )
+        # Read button state (the GPIO sometimes returns None)
+        raw_button = manip.get_gpio(button_pin)
+        button_pressed = (raw_button if raw_button is not None else 1.0) == 0.0
+
+        if button_pressed:
+            # LED toggle once per second
+            if time() - led_last_toggle > 1.0 - manip._EPS:
+                led_value = 1 - led_value
+                manip.medu.write_gpio(led_pin, led_value)
+                led_last_toggle = time()
+
+            # Compute new angle around Z
+            current_angle = math.atan2(manip.position[1], manip.position[0])
+
+            # Adjust angle depending on oscillation direction
+            if oscillation_direction_forward:
+                target_angle = current_angle - math.pi / 6
             else:
-                new_angle = (
-                    math.atan2(manip.position[1], manip.position[0]) + math.pi / 6
-                )
-                manip.medu.stream_coordinates(
-                    position=MoveCoordinatesParamsPosition(
-                        x=length * math.cos(new_angle),
-                        y=length * math.sin(new_angle),
-                        z=height,
-                    ),
-                    orientation=manip._USELESS_ROTATE,
-                )
+                target_angle = current_angle + math.pi / 6
+
+            # Send streaming pose
+            manip.medu.stream_coordinates(
+                position=MoveCoordinatesParamsPosition(
+                    x=radius_xy * math.cos(target_angle),
+                    y=radius_xy * math.sin(target_angle),
+                    z=z_height,
+                ),
+                orientation=manip._USELESS_ROTATE,
+            )
+
+            # Flip oscillation direction based on pose limits
             if manip.pose[0] >= 0.67:
-                flfl = False
+                oscillation_direction_forward = False
             elif manip.pose[0] <= -0.67:
-                flfl = True
+                oscillation_direction_forward = True
+
         else:
             manip.medu.write_gpio(led_pin, 0)
+
         sleep(0.1)
 
 
@@ -69,6 +83,7 @@ if __name__ == "__main__":
 
     from utils.innomedu import InnoMEdu
 
+    # Redirect normal stdout to a log file
     _stdout = sys.stdout
     # comment the line below to see all the output
     sys.stdout = open(f"logs/out_{int(time())}.log", "w")
