@@ -54,46 +54,61 @@ def run_test(
         h1 = 0.2
         h2 = 0.01
         vel = 0.5
+        angle_to_close = 44
+        angle_to_open = -88
+        angle_to_up = 86
+        angle_to_reverse = -88
 
-        manipulator.set_gripper(86, -88)
+        # Set up the gripper in proper orientation
+        manipulator.set_gripper(angle_to_up, angle_to_open)
         sleep(1)
 
+        # Move to position upper first clocks
         manipulator.to_coordinates(x1, y1, h1, velocity=vel)
 
+        # Move manipulator lower and grab first clocks
         manipulator.to_coordinates(x1, y1, h2, velocity=vel)
-        manipulator.set_gripper(86, 44)
+        manipulator.set_gripper(angle_to_up, angle_to_close)
         sleep(1)
 
+        # Move first clocks up and rotate it in 180 degrees
         manipulator.to_coordinates(x1, y1, h1, velocity=vel)
-        manipulator.set_gripper(-88, 44)
+        manipulator.set_gripper(angle_to_reverse, angle_to_close)
         sleep(1)
 
+        # Put first clocks on floor and open gripper
         manipulator.to_coordinates(x1, y1, h2, velocity=vel)
-        manipulator.set_gripper(-88, -88)
+        manipulator.set_gripper(angle_to_reverse, angle_to_open)
         sleep(1)
 
+        # Move manipulator upper again for safe trajectory navigation 
         manipulator.to_coordinates(x1, y1, h1, velocity=vel)
 
+        # Move manipulator upper second clocks, open gripper, rotate in needed way, and wait left second to finish all movement correctly at 60 seconds
         manipulator.to_coordinates(x2, y2, h1, velocity=vel)
         sleep(40)
-        manipulator.set_gripper(86, -88)
+        manipulator.set_gripper(angle_to_up, angle_to_open)
         sleep(1)
 
+        # Move manipulator lower to second clocks and grab them
         manipulator.to_coordinates(x2, y2, h2, velocity=vel)
-        manipulator.set_gripper(86, 44)
+        manipulator.set_gripper(angle_to_up, angle_to_close)
         sleep(1)
 
+        # Move manipulator upper, and rotate it in 180 degrees
         manipulator.to_coordinates(x2, y2, h1, velocity=vel)
-        manipulator.set_gripper(-88, 44)
+        manipulator.set_gripper(angle_to_reverse, angle_to_close)
         sleep(1)
 
+        # Put second clocks on floor and open gripper
         manipulator.to_coordinates(x2, y2, h2, velocity=vel)
-        manipulator.set_gripper(-88, -88)
+        manipulator.set_gripper(angle_to_reverse, angle_to_open)
         sleep(1)
 
+        # Move manipulator upper and finish task
         manipulator.to_coordinates(x2, y2, h1, velocity=vel)
 
-        logger.info("TEST COMPLETED SUCCESSFULLY")
+        logger.info("TASK 2 COMPLETED SUCCESSFULLY")
 
     except Exception as e:
         logger.exception(f"Error during test: {e}", exc_info=True)

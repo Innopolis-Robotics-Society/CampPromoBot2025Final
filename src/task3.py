@@ -48,9 +48,7 @@ def run_test(
 
         logger.info("Connected successfully!")
 
-        # test(manipulator)
-
-        # manipulator.play_audio("warning.wav")
+        # Dictionary from angles to positions
         positions = {
             0: (0.30, 0.0, 0.3),
             30: (0.26, -0.15, 0.3),
@@ -58,48 +56,55 @@ def run_test(
             90: (0.00, -0.30, 0.3)
         }
 
+        # Some variables for movement logic
         previous_angle = None
         previous_dist = 0
         angle = 0
         sound = 0
 
+        # Main loop
         while True:
+            # Get distance from distance sensor on conveyor
             dist = manipulator.conveyor.get_distance()
             logger.info(f"Distance: {dist}")
+
+            # 4 Cases of distances and their respective angles and sound effects 
             if abs(dist - previous_dist) > 10:
-                if 500 >= dist >= 400:
+                if 500 >= dist >= 400: # Case for distance in interval [400, 500]
                     if previous_angle != 0:
                         angle = 0
                         sound = 0
-                elif 200 <= dist < 400:
+                elif 200 <= dist < 400: # Case for distance in interval [200, 400)
                     if previous_angle != 30:
                         angle = 30
                         sound = 1
-                elif 100 <= dist < 200:
+                elif 100 <= dist < 200: # Case for distance in interval [100, 200)
                     if previous_angle != 60:
                         angle = 60
                         sound = 3
-                elif dist < 100:
+                elif dist < 100: # Case for distance in interval [0, 100)
                     if previous_angle != 90:
                         angle = 90
                         sound = 10000
-                else:
+                else: # Case when difference between two last distances is lower than 10 (we consider this change as non-effective)
                     angle = previous_angle
                     sound = 0
+                previous_dist = dist
                 
+            # Check is previous assignment of angle was on equal angle value
             if previous_angle != angle:
+                # Get coordinates of point for given angle of rotation by z (yaw) axis, and move manipulator in this point
                 x, y, z = positions[angle]
-
                 manipulator.to_coordinates(x, y, z, velocity=0.5, acceleration=0.5)
-
                 logger.info(f"Moved to angle {angle}, Distance: {dist}")
 
+
             previous_angle = angle
-            if sound != 0:
+            if sound != 0: # If there left number of sound warnings, do play sound
                 manipulator.play_audio("warning.wav")
                 sound -= 1
 
-        logger.info("TEST COMPLETED SUCCESSFULLY")
+        logger.info("TASK 3 COMPLETED SUCCESSFULLY")
 
     except Exception as e:
         logger.exception(f"Error during test: {e}", exc_info=True)
@@ -124,7 +129,7 @@ def main():
     parser.add_argument(
         "--host",
         type=str,
-        default="10.5.0.2",
+        default="10.87.14.122",
         help="IP address of the manipulator",
     )
     parser.add_argument(
