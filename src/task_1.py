@@ -10,12 +10,12 @@ from time import sleep, time
 from sdk.commands.move_coordinates_command import MoveCoordinatesParamsPosition, MoveCoordinatesParamsOrientation
 
 
-COLOR_POSE_CONV = 380
+COLOR_POSE_CONV = 3
 COLOR_PROX_TRIGGER = 30
 PICK_POSE_CONV = 130
-PICK_POSE = [[0.25, 0.17, 0.19], [0.25, 0.17, 0.27], 25]
-PICK_TRASH_POSE = [[0.25, -0.11, 0.19], [0.25, -0.11, 0.27], -25]
-THROW_POSE = [[0.25, -0.2, 0.19], [0.25, -0.2, 0.27], -33]
+PICK_POSE = [[0.248, 0.17, 0.19], [0.248, 0.17, 0.27], 26]
+PICK_TRASH_POSE = [[0.25, -0.10, 0.19], [0.25, -0.11, 0.27], -26]
+THROW_POSE = [[0.252, -0.2, 0.19], [0.252, -0.2, 0.27], -35]
 TRASH_POSE = [[0.33, 0.0, 0.19], [0.33, 0.0, 0.27], 0]
 USLESS_SILLY_THING = MoveCoordinatesParamsOrientation(0, 0, 0, 1)
 
