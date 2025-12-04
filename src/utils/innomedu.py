@@ -1,7 +1,7 @@
 import logging
 import math
 from time import sleep
-from typing import Callable
+from typing import Callable, Literal
 import os
 import paramiko
 
@@ -26,7 +26,7 @@ class InnoMEdu:
         "finish.wav",
         "wait.wav",
     }
-    DefaultGPIOInterfaces = [
+    DefaultGPIOInterfaces = Literal[
         "/dev/gpiochip4/e1_pin",
         "/dev/gpiochip4/e2_pin",
         "/dev/gpiochip4/nrst_pin",
@@ -55,9 +55,9 @@ class InnoMEdu:
         self.password = password
         self.medu = MEdu(host, client_id, login, password)
         self.conveyor = InnoConveyor(self.medu.mgbot_conveyer)
+        self.medu.set_gpio_states_handler(self._gpio_cb)
         self.medu.set_coordinates_handler(self._position_cb)
         self.medu.set_joint_states_handler(self._pose_cb)
-        self.medu.set_gpio_states_handler(self._gpio_cb)
 
     def choose_tool(self, tool: str):
         """
@@ -81,9 +81,23 @@ class InnoMEdu:
         for i in range(len(gpio["interface_names"])):
             self.gpio_states[gpio["interface_names"][i]] = gpio["values"][i]
 
+    def get_gpio(self, name: DefaultGPIOInterfaces) -> float | None:
+        value = self.medu.get_gpio_value(name)
+        if value is None:
+            self.logger.warning(f"No gpio {name}")
+        return value
+
     def gripper_on(self):
         self.medu.nozzle_power(True)
         self.logger.info("Gripper on")
+
+    def set_gripper(self, rotation: int | None = None, gripper: int | None = None):
+        """
+        rotation: from -88 to 90
+        gripper: from -90 (open) to 90 (closed)
+        """
+        self.gripper_on()
+        self.medu.manage_gripper(rotation=rotation, gripper=gripper)
 
     def to_coordinates(
         self,
