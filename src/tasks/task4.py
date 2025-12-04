@@ -61,4 +61,5 @@ def task4(manip: InnoMEdu):
                 flfl = True
         else:
             manip.medu.write_gpio(led_pin, 0)
+        logger.info(f"Button: {is_button}, all gpios: {manip.gpio_states}")
         sleep(0.1)
