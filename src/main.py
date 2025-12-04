@@ -4,9 +4,12 @@ import sys
 from time import time
 from typing import Callable
 
+from tasks.task4 import task4
 import tests
 from utils.innomedu import InnoMEdu
 
+
+TEST = task4
 
 _stdout = sys.stdout
 # comment the line below to see all the output
@@ -98,9 +101,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(
-        args.host, args.client_id, args.login, args.password, tests.to_gripper_test
-    )
+    run_test(args.host, args.client_id, args.login, args.password, TEST)
 
 
 if __name__ == "__main__":
