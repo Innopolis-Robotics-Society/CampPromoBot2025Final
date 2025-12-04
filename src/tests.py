@@ -32,3 +32,11 @@ def color_test(manip: InnoMEdu):
         manip.conveyor.display_text(f"Proximity: {color_res[1]}")
         logger.info(f"{manip.medu.mgbot_conveyer.get_sensors_data()}")
         sleep(1)
+
+
+def to_gripper_test(manip: InnoMEdu):
+    manip.gripper_on()
+    logger.info("Gripper on")
+    manip.to_coordinates_gripper(0.2, 0.15, 0.2, 45)
+    manip.to_coordinates_gripper(0.25, 0.0, 0.2, 45)
+    manip.to_coordinates_gripper(0.2, -0.15, 0.2, 45)

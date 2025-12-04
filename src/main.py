@@ -99,7 +99,9 @@ def main():
 
     args = parser.parse_args()
 
-    run_test(args.host, args.client_id, args.login, args.password, tests.color_test)
+    run_test(
+        args.host, args.client_id, args.login, args.password, tests.to_gripper_test
+    )
 
 
 if __name__ == "__main__":
