@@ -18,7 +18,22 @@ from utils.conveyor import InnoConveyor
 class InnoMEdu:
     logger = logging.getLogger("InnoMEdu")
     coordinate_tool: str = "tool0"
-    audio_files = {"sound.wav", "start.wav", "finish.wav", "wait.wav"}
+    audio_files = {
+        "alert.wav",
+        "warning.wav",
+        "sound.wav",
+        "start.wav",
+        "finish.wav",
+        "wait.wav",
+    }
+    DefaultGPIOInterfaces = [
+        "/dev/gpiochip4/e1_pin",
+        "/dev/gpiochip4/e2_pin",
+        "/dev/gpiochip4/nrst_pin",
+        "/dev/gpiochip4/stop_key_pin",
+        "/dev/gpiochip4/ext_rx_pin",
+        "/dev/gpiochip4/ext_tx_pin",
+    ]
 
     """Joint states of the manipulator from base to end-effector."""
     pose: tuple[float, float, float] = (0.0, 0.0, 0.0)
@@ -68,6 +83,7 @@ class InnoMEdu:
 
     def gripper_on(self):
         self.medu.nozzle_power(True)
+        self.logger.info("Gripper on")
 
     def to_coordinates(
         self,
