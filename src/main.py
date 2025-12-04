@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from time import time
 from typing import Callable
 
 import tests
@@ -9,7 +10,7 @@ from utils.innomedu import InnoMEdu
 
 _stdout = sys.stdout
 # comment the line below to see all the output
-sys.stdout = os.devnull
+sys.stdout = open(f"logs/out_{int(time())}.log", "w")
 logging.basicConfig(
     level=logging.INFO,
     stream=_stdout,
