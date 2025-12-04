@@ -75,7 +75,7 @@ def main():
     parser.add_argument(
         "--host",
         type=str,
-        default="//",
+        default="10.5.0.2",
         help="IP address of the manipulator",
     )
     parser.add_argument(
