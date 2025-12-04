@@ -2,8 +2,6 @@ import json
 import logging
 from time import sleep
 
-from sdk.manipulators.medu import MEdu
-
 from utils.innomedu import InnoMEdu
 
 
@@ -29,5 +27,8 @@ def conveyor_test(manip: InnoMEdu):
 
 def color_test(manip: InnoMEdu):
     while True:
-        logger.info(manip.conveyor.get_color())
+        color_res = manip.conveyor.get_color()
+        manip.conveyor.set_led(*color_res[0])
+        manip.conveyor.display_text(f"Proximity: {color_res[1]}")
+        logger.info(f"{manip.medu.mgbot_conveyer.get_sensors_data()}")
         sleep(1)

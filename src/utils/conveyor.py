@@ -11,14 +11,14 @@ class InnoConveyor:
         returns: ((R, G, B), Proximity)
         Proximity shows presense of an object before the sensor.
         """
-        data = json.loads(self._conveyer.get_sensors_data())["ColorSensor"]
+        data = json.loads(self._conveyer.get_sensors_data(True))["ColorSensor"]
         return ((data["R"], data["G"], data["B"]), data["Prox"])
 
     def get_distance(self) -> int:
         """
         returns: distance (probably in millimeters)
         """
-        data = json.loads(self._conveyer.get_sensors_data())
+        data = json.loads(self._conveyer.get_sensors_data(True))
         return data["DistanceSensor"]
 
     def set_servo(self, angle: int):
