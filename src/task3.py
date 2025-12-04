@@ -63,8 +63,6 @@ def run_test(
         angle = 0
         sound = 0
 
-        manipulator.conveyor.set_speed(6)
-
         while True:
             dist = manipulator.conveyor.get_distance()
             logger.info(f"Distance: {dist}")
