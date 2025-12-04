@@ -1,5 +1,6 @@
 import json
 import logging
+from math import log
 from time import sleep
 
 from utils.innomedu import InnoMEdu
@@ -40,3 +41,26 @@ def to_gripper_test(manip: InnoMEdu):
     manip.to_coordinates_gripper(0.2, 0.15, 0.2, 45)
     manip.to_coordinates_gripper(0.25, 0.0, 0.2, 45)
     manip.to_coordinates_gripper(0.2, -0.15, 0.2, 45)
+
+
+def gpio_test(manip: InnoMEdu):
+    x = False
+    while True:
+        x = not x
+        manip.medu.write_gpio("/dev/gpiochip4/e1_pin", 1 if x else 0)
+        name = "/dev/gpiochip4/e2_pin"
+        logger.info(f"{name}: {manip.medu.get_gpio_value(name)}")
+        # logger.info(f"{manip.gpio_states}")
+        sleep(0.5)
+
+
+def gripper_test(manip: InnoMEdu):
+    manip.gripper_on()
+    sleep(2)
+    manip.medu.manage_gripper(rotation=-88, gripper=-90)
+    sleep(2)
+    manip.medu.manage_gripper(rotation=100)
+    # for i in range(-180, 180, 10):
+    #    logger.info(f"Gripper: {i}")
+    #    manip.medu.manage_gripper(rotation=i)
+    #    sleep(0.5)

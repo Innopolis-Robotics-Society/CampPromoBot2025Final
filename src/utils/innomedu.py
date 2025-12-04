@@ -47,7 +47,7 @@ class InnoMEdu:
     # accuracy of positioning
     _EPS = 0.01
     # path where audio files stored on manipulator
-    _AUDIO_REMOTE_PATH = "/home/promobot"
+    _AUDIO_REMOTE_PATH = "/opt/promobot/share/pm_behavior_tree/resources/audio"
 
     def __init__(self, host: str, client_id: str, login: str, password: str):
         self.host = host
@@ -55,6 +55,10 @@ class InnoMEdu:
         self.password = password
         self.medu = MEdu(host, client_id, login, password)
         self.conveyor = InnoConveyor(self.medu.mgbot_conveyer)
+
+    def connect(self):
+        self.medu.connect()
+        self.medu.get_control()
         self.medu.set_gpio_states_handler(self._gpio_cb)
         self.medu.set_coordinates_handler(self._position_cb)
         self.medu.set_joint_states_handler(self._pose_cb)
@@ -74,7 +78,8 @@ class InnoMEdu:
     def _pose_cb(self, new_pose):
         """The handler to parse current rotations of the joints and update them."""
         j = new_pose["position"]
-        self.pose = tuple([j / math.pi * 180 for j in (j[0], j[1], j[2])])
+        # self.pose = tuple([j * 180.0 / math.pi for j in (j[0], j[1], j[2])])
+        self.pose = tuple([j for j in (j[0], j[1], j[2])])
 
     def _gpio_cb(self, gpio):
         """The handler to parse current GPIO states and update them."""
@@ -82,10 +87,9 @@ class InnoMEdu:
             self.gpio_states[gpio["interface_names"][i]] = gpio["values"][i]
 
     def get_gpio(self, name: DefaultGPIOInterfaces) -> float | None:
-        value = self.medu.get_gpio_value(name)
-        if value is None:
-            self.logger.warning(f"No gpio {name}")
-        return value
+        if name in self.gpio_states:
+            return self.gpio_states[name]
+        return None
 
     def gripper_on(self):
         self.medu.nozzle_power(True)
@@ -104,8 +108,8 @@ class InnoMEdu:
         x: float,
         y: float,
         z: float,
-        velocity: float = 1.0,
-        acceleration: float = 1.0,
+        velocity: float = 0.5,
+        acceleration: float = 0.5,
     ):
         """More convenient method to move to coordinates."""
         target = MoveCoordinatesParamsPosition(x, y, z)

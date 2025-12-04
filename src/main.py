@@ -43,8 +43,7 @@ def run_test(
     manipulator = InnoMEdu(host, client_id, login, password)
 
     try:
-        manipulator.medu.connect()
-        manipulator.medu.get_control()
+        manipulator.connect()
 
         logger.info("Connected successfully!")
 
