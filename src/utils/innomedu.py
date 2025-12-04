@@ -66,6 +66,9 @@ class InnoMEdu:
         for i in range(len(gpio["interface_names"])):
             self.gpio_states[gpio["interface_names"][i]] = gpio["values"][i]
 
+    def gripper_on(self):
+        self.medu.nozzle_power(True)
+
     def to_coordinates(
         self,
         x: float,
